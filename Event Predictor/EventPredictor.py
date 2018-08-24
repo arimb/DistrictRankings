@@ -1,0 +1,35 @@
+import requests
+import tkinter as tk
+from tkinter import filedialog
+from operator import itemgetter
+
+def getdata(url):
+    try:
+        ans = requests.get("https://www.thebluealliance.com/api/v3/" + url,
+                           "accept=application%2Fjson&X-TBA-Auth-Key=gl4GXuoqG8anLUrLo356LIeeQZk15cfSoXF72YT3mYkI38cCoAmReoCSSF4XWccQ").json()
+        if ans is not None:
+            return ans
+        else:
+            print("oops null " + url)
+            getdata(url)
+    except:
+        print("oops " + url)
+        getdata(url)
+
+DPs = {}
+tk.Tk().withdraw()
+with open(filedialog.askopenfilename()) as file:
+    allteams = file.readlines()
+titles = allteams[0].strip().split(",")
+for team in allteams[1:]:
+    team = team.strip().split(",")
+    DPs["frc" + team[0]] = {}
+    for i, element in enumerate(team[1:], start=1):
+        DPs["frc" + team[0]][titles[i]] = element
+
+teams = []
+competing = getdata("event/" + input("Event Key: ") + "/teams/keys")
+for team in competing:
+    teams.append((team, float(DPs[team]["AdjDP"])))
+teams = sorted(teams, key=itemgetter(1), reverse=True)
+print(teams)

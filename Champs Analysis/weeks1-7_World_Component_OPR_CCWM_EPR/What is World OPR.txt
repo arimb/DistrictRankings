@@ -1,0 +1,30 @@
+
+*** WHAT IS WORLD OPR? ***
+
+
+
+First, What World OPR is NOT:
+
+World OPR for your team is NOT the average of your team's Event OPRs.
+
+
+World OPR is computed by taking the scoring data for all events and solving all that data simultaneously.
+
+
+For example, consider 2018 Weeks 1 thru 6 thru 4/8/18:
+
+There were 152 events involving 3585 teams and 11955 qual matches.
+
+For each of those 11955 qual matches there were 2 alliances.
+
+For each alliance a linear equation is formed, so there are 2*11955 = 23910 equations.
+
+World OPR involves solving those 23910 equations for the 3585 unknowns (3585 Team OPRs).
+
+Performing this computation can take a long time if you don't use the right tools and techniques.
+
+
+
+
+
+

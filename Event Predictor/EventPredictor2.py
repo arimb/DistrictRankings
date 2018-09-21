@@ -34,7 +34,8 @@ teams = getdata("event/"+input("event: ")+"/teams/keys")
 matches = int(input("Matches per Team: "))
 runs = int(input("Iterations: "))
 
-results = {team:0 for team in teams}
+results = {team:[0]*len(teams) for team in teams}
+avg = {team:0 for team in teams}
 for i in range(runs):
     print(i)
     ev = {team:[0,0] for team in teams}
@@ -64,12 +65,16 @@ for i in range(runs):
         except:
             pass
     for rank, team in enumerate(ev, start=1):
-        results[team[1]] += rank
+        results[team[1]][rank] += 1
+        avg[team[1]] += rank
 
-for team in results:
-    results[team] /= runs
-
-with open("2018cc.csv", "w+") as file:
-    file.write("Team,Avg Rank\n")
-    for team in results:
-        file.write(team[3:] + "," + str(results[team]) + "\n")
+with open("2018cc_.csv", "w+") as file:
+    file.write("Team,Avg Rank,")
+    for i in range(len(teams)):
+        file.write(str(i) + ",")
+    file.write("\n")
+    for team in avg:
+        file.write(team[3:] + "," + str(avg[team]/runs))
+        for x in results[team]:
+            file.write(str(x) + ",")
+        file.write("\n")

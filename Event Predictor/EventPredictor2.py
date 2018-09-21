@@ -33,27 +33,30 @@ teams = getdata("event/"+input("event: ")+"/teams/keys")
 matches = int(input("Matches per Team: "))
 runs = int(input("Iterations: "))
 
-results = {team:[0,0] for team in teams}
+results = {team:0 for team in teams}
 for i in range(runs):
     print(i)
     ev = {team:[0,0] for team in teams}
-    for j in range(int(len(teams)*matches/6)):
-        random.shuffle(teams)
-        winner = sum([DPs[team]["Adj Qual DP"] for team in teams[0:3]]) > sum([DPs[team]["Adj Qual DP"] for team in teams[3:6]])
-        for team in teams[0:6]:
-            ev[team][1] += 1
-        for team in teams[0:3] if winner else teams[3:6]:
-            ev[team][0] += 1
-    ev = sorted([(ev[tmp][0]/ev[tmp][1], tmp) for tmp in ev])
+    while True:
+        try:
+            for j in range(int(len(teams)*matches/6)):
+                random.shuffle(teams)
+                winner = sum([DPs[team]["Adj Qual DP"] for team in teams[0:3]]) > sum([DPs[team]["Adj Qual DP"] for team in teams[3:6]])
+                for team in teams[0:6]:
+                    ev[team][1] += 1
+                for team in teams[0:3] if winner else teams[3:6]:
+                    ev[team][0] += 1
+            ev = sorted([(ev[tmp][0]/ev[tmp][1], tmp) for tmp in ev], reverse=True)
+            break
+        except:
+            pass
     for rank, team in enumerate(ev, start=1):
-        print(type(team[1]))
-        print(team[1])
         results[team[1]] += rank
 
 for team in results:
     results[team] /= runs
 
 with open("cc.csv", "w+") as file:
-    file.write("Team,Wins,Plays,Avg\n")
+    file.write("Team,Avg Rank\n")
     for team in results:
-        file.write(team + "," + str(results[team][0]) + "," + str(results[team][1]) + "," + str(results[team][0]/results[team][1]) + "\n")
+        file.write(team[3:] + "," + str(results[team]) + "\n")

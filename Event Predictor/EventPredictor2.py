@@ -24,9 +24,10 @@ with open(filedialog.askopenfilename()) as file:
 titles = allteams[0].strip().split(",")
 for team in allteams[1:]:
     team = team.strip().split(",")
-    DPs["frc" + team[0]] = {}
+    key = ("frc" if team[0][:2]=="frc" else "") + team[0]
+    DPs[key] = {}
     for i, element in enumerate(team[1:], start=1):
-        DPs["frc" + team[0]][titles[i]] = float(element)
+        DPs[key][titles[i]] = float(element)
 
 # teams = [tmp if tmp[:3]=="frc" else ("frc"+tmp) for tmp in (re.split(' ', input("Teams: ")))]
 teams = getdata("event/"+input("event: ")+"/teams/keys")
@@ -41,11 +42,23 @@ for i in range(runs):
         try:
             for j in range(int(len(teams)*matches/6)):
                 random.shuffle(teams)
-                winner = sum([DPs[team]["Adj Qual DP"] for team in teams[0:3]]) > sum([DPs[team]["Adj Qual DP"] for team in teams[3:6]])
+                redwins = sum([DPs[team]["Avg Win RP"] for team in teams[0:3]]) > sum([DPs[team]["Avg Win RP"] for team in teams[3:6]])
                 for team in teams[0:6]:
                     ev[team][1] += 1
-                for team in teams[0:3] if winner else teams[3:6]:
-                    ev[team][0] += 1
+                for team in teams[0:3] if redwins else teams[3:6]:
+                    ev[team][0] += 2
+                if 3*random.random() <= sum([DPs[team]["Avg Auto RP"] for team in teams[0:3]]):
+                    for team in teams[0:3]:
+                        ev[team][0] += 1
+                if 3*random.random() <= sum([DPs[team]["Avg Climb RP"] for team in teams[0:3]]):
+                    for team in teams[0:3]:
+                        ev[team][0] += 1
+                if 3*random.random() <= sum([DPs[team]["Avg Auto RP"] for team in teams[3:6]]):
+                    for team in teams[3:6]:
+                        ev[team][0] += 1
+                if 3*random.random() <= sum([DPs[team]["Avg Climb RP"] for team in teams[3:6]]):
+                    for team in teams[3:6]:
+                        ev[team][0] += 1
             ev = sorted([(ev[tmp][0]/ev[tmp][1], tmp) for tmp in ev], reverse=True)
             break
         except:
@@ -56,7 +69,7 @@ for i in range(runs):
 for team in results:
     results[team] /= runs
 
-with open("cc.csv", "w+") as file:
+with open("2018cc.csv", "w+") as file:
     file.write("Team,Avg Rank\n")
     for team in results:
         file.write(team[3:] + "," + str(results[team]) + "\n")

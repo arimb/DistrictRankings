@@ -1,4 +1,3 @@
-# import re
 import random
 import tkinter as tk
 from tkinter import filedialog
@@ -19,6 +18,7 @@ def getdata(url):
 
 DPs = {}
 tk.Tk().withdraw()
+# with open(input("Ranking Points file path: ")) as file:
 with open(filedialog.askopenfilename()) as file:
     allteams = file.readlines()
 titles = allteams[0].strip().split(",")
@@ -29,8 +29,8 @@ for team in allteams[1:]:
     for i, element in enumerate(team[1:], start=1):
         DPs[key][titles[i]] = float(element)
 
-# teams = [tmp if tmp[:3]=="frc" else ("frc"+tmp) for tmp in (re.split(' ', input("Teams: ")))]
-teams = getdata("event/"+input("event: ")+"/teams/keys")
+event = input("event: ")
+teams = getdata("event/"+event+"/teams/keys")
 matches = int(input("Matches per Team: "))
 runs = int(input("Iterations: "))
 
@@ -65,16 +65,16 @@ for i in range(runs):
         except:
             pass
     for rank, team in enumerate(ev, start=1):
-        results[team[1]][rank] += 1
+        results[team[1]][rank-1] += 1
         avg[team[1]] += rank
 
-with open("2018cc_.csv", "w+") as file:
+with open(event+".csv", "w+") as file:
     file.write("Team,Avg Rank,")
     for i in range(len(teams)):
         file.write(str(i) + ",")
     file.write("\n")
     for team in avg:
-        file.write(team[3:] + "," + str(avg[team]/runs))
+        file.write(team[3:] + "," + str(avg[team]/runs) + ",")
         for x in results[team]:
-            file.write(str(x) + ",")
+            file.write(str(x/runs) + ",")
         file.write("\n")

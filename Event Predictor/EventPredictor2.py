@@ -1,6 +1,4 @@
 import random
-import tkinter as tk
-from tkinter import filedialog
 import requests
 
 def getdata(url):
@@ -17,9 +15,7 @@ def getdata(url):
         getdata(url)
 
 DPs = {}
-tk.Tk().withdraw()
-# with open(input("Ranking Points file path: ")) as file:
-with open(filedialog.askopenfilename()) as file:
+with open("../Ranking Points/world_RP.csv") as file:
     allteams = file.readlines()
 titles = allteams[0].strip().split(",")
 for team in allteams[1:]:
@@ -31,39 +27,38 @@ for team in allteams[1:]:
 
 event = input("event: ")
 teams = getdata("event/"+event+"/teams/keys")
-matches = int(input("Matches per Team: "))
+num_matches = int(input("Matches per Team: "))
+with open("schedules/"+str(len(teams))+"_"+str(num_matches)+".csv") as file:
+    matches = file.readlines()
+matches = [[int(x) for x in match.strip().split(",")[0::2]] for match in matches]
 runs = int(input("Iterations: "))
 
 results = {team:[0]*len(teams) for team in teams}
 avg = {team:0 for team in teams}
 for i in range(runs):
     print(i)
+    random.shuffle(teams)
     ev = {team:[0,0] for team in teams}
-    while True:
-        try:
-            for j in range(int(len(teams)*matches/6)):
-                random.shuffle(teams)
-                redwins = sum([DPs[team]["Avg Win RP"] for team in teams[0:3]]) > sum([DPs[team]["Avg Win RP"] for team in teams[3:6]])
-                for team in teams[0:6]:
-                    ev[team][1] += 1
-                for team in teams[0:3] if redwins else teams[3:6]:
-                    ev[team][0] += 2
-                if 3*random.random() <= sum([DPs[team]["Avg Auto RP"] for team in teams[0:3]]):
-                    for team in teams[0:3]:
-                        ev[team][0] += 1
-                if 3*random.random() <= sum([DPs[team]["Avg Climb RP"] for team in teams[0:3]]):
-                    for team in teams[0:3]:
-                        ev[team][0] += 1
-                if 3*random.random() <= sum([DPs[team]["Avg Auto RP"] for team in teams[3:6]]):
-                    for team in teams[3:6]:
-                        ev[team][0] += 1
-                if 3*random.random() <= sum([DPs[team]["Avg Climb RP"] for team in teams[3:6]]):
-                    for team in teams[3:6]:
-                        ev[team][0] += 1
-            ev = sorted([(ev[tmp][0]/ev[tmp][1], tmp) for tmp in ev], reverse=True)
-            break
-        except:
-            pass
+    for match in matches:
+        playing = [teams[x-1] for x in match]
+        redwins = sum([DPs[team]["Avg Win RP"] for team in playing[0:3]]) > sum([DPs[team]["Avg Win RP"] for team in playing[3:6]])
+        for team in playing[0:6]:
+            ev[team][1] += 1
+        for team in playing[0:3] if redwins else playing[3:6]:
+            ev[team][0] += 2
+        if 3*random.random() <= sum([DPs[team]["Avg Auto RP"] for team in playing[0:3]]):
+            for team in playing[0:3]:
+                ev[team][0] += 1
+        if 3*random.random() <= sum([DPs[team]["Avg Climb RP"] for team in playing[0:3]]):
+            for team in playing[0:3]:
+                ev[team][0] += 1
+        if 3*random.random() <= sum([DPs[team]["Avg Auto RP"] for team in playing[3:6]]):
+            for team in playing[3:6]:
+                ev[team][0] += 1
+        if 3*random.random() <= sum([DPs[team]["Avg Climb RP"] for team in playing[3:6]]):
+            for team in playing[3:6]:
+                ev[team][0] += 1
+    ev = sorted([(ev[tmp][0]/ev[tmp][1], tmp) for tmp in ev], reverse=True)
     for rank, team in enumerate(ev, start=1):
         results[team[1]][rank-1] += 1
         avg[team[1]] += rank
@@ -71,7 +66,7 @@ for i in range(runs):
 with open(event+".csv", "w+") as file:
     file.write("Team,Avg Rank,")
     for i in range(len(teams)):
-        file.write(str(i) + ",")
+        file.write(str(i+1) + ",")
     file.write("\n")
     for team in avg:
         file.write(team[3:] + "," + str(avg[team]/runs) + ",")

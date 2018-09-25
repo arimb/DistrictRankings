@@ -1,6 +1,5 @@
 import csv
 import requests
-import itertools
 
 def getdata(url):
     try:
@@ -24,14 +23,15 @@ def generate(current, lst, shekels):
     global best
     currentprice = sum([teams[x][1] for x in current])
     for team in lst:
+        if len(current)==4:print(current+[team])
         if currentprice + teams[team][1] <= shekels:
             if sum([teams[x][0] for x in current]) + teams[team][0] > best[0]:
                 best = (sum([teams[x][0] for x in best[1]]) + teams[team][0], current+[team])
-                print(best[0])
+                print(best)
             if len(lst)>1:
-                generate(current+[team], removekey(teams,team), shekels)
+                generate(current+[team], removekey(lst,team), shekels)
 
-with open("DistrictRankings/World Ranking/2018_world_DP.csv") as dpfile, open("DistrictRankings/Pickem League/input.csv") as pricefile:
+with open("../World Ranking/2018_world_DP.csv") as dpfile, open("../Pickem League/input.csv") as pricefile:
     allteams = {}
     dpreader = csv.DictReader(dpfile)
     for row in dpreader:

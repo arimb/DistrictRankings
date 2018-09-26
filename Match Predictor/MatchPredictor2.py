@@ -33,6 +33,9 @@ runs = int(input("Iterations: "))
 
 results = {team:[0]*len(teams) for team in teams}
 avg = {team:0 for team in teams}
+match_results = [0]*len(matches)
+auto_results = [[0,0] for i in matches]
+climb_results = [[0,0] for i in matches]
 for i in range(runs):
     print(i)
     ev = {team:[0,0] for team in teams}
@@ -40,15 +43,20 @@ for i in range(runs):
         if match["comp_level"]!= "qm": continue
         playing = match["alliances"]["red"]["team_keys"] + match["alliances"]["blue"]["team_keys"]
         redwins = random.random() <= 1/(1+math.exp(-3.5*(sum([DPs[team]["Avg Win RP"] for team in playing[:3]])-sum([DPs[team]["Avg Win RP"] for team in playing[3:]]))))
+        match_results[match["match_number"]-1] += redwins
         for team in playing:
             ev[team][1] += 1
         for team in playing[:3] if redwins else playing[3:]:
             ev[team][0] += 2
-        for alliance in [playing[:3], playing[3:]]:
+        for x, alliance in enumerate([playing[:3], playing[3:]]):
             if 3*random.random() <= sum([DPs[team]["Avg Auto RP"] for team in alliance]):
+                # print("auto " + str(x))
+                auto_results[match["match_number"]-1][x] += 1
                 for team in alliance:
                     ev[team][0] += 1
             if 3*random.random() <= sum([DPs[team]["Avg Climb RP"] for team in alliance]):
+                # print("climb " + str(x))
+                climb_results[match["match_number"]-1][x] += 1
                 for team in alliance:
                     ev[team][0] += 1
     ev = sorted([(ev[tmp][0]/ev[tmp][1], tmp) for tmp in ev], reverse=True)
@@ -66,4 +74,12 @@ with open("DistrictRankings/Match Predictor/"+event+".csv", "w+") as file:
         for x in results[team]:
             file.write(str(x/runs) + ",")
         file.write("\n")
-    file.flush()
+
+print(match_results)
+print(auto_results)
+print(climb_results)
+with open("DistrictRankings/Match Predictor/"+event+"_matches.csv", "w+") as file:
+    file.write("Match,Red Win %,Red Auto,Red Climb,Blue Auto,Blue Climb\n")
+    for num, (match, auto, climb) in enumerate(zip(match_results, auto_results, climb_results), start=1):
+        file.write(str(num) + "," + str(match/runs) + "," + str(auto[0]/runs) + "," + str(climb[0]/runs) + "," +
+                   str(auto[1]/runs) + "," + str(climb[1]/runs) + "\n")

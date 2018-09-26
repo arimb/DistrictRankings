@@ -31,7 +31,7 @@ def generate(current, lst, shekels):
             if len(lst)>1:
                 generate(current+[team], removekey(lst,team), shekels)
 
-with open("../World Ranking/2018_world_DP.csv") as dpfile, open("../Pickem League/input.csv") as pricefile:
+with open("DistrictRankings/World Ranking/2018_world_DP.csv") as dpfile, open("DistrictRankings/Pickem League/input.csv") as pricefile:
     allteams = {}
     dpreader = csv.DictReader(dpfile)
     for row in dpreader:

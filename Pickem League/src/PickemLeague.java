@@ -54,7 +54,7 @@ public class PickemLeague {
         }
 
         for (Team team : lst) {
-            if (current.size() == 3) System.out.println(current.toString() + team.number);
+            if (current.size() == 1) System.out.println(current.toString() + team.number);
             if (currentPrice + team.price <= shekels) {
                 if (currentDP + team.DP > bestTotal) {
                     best = new ArrayList<Team>(current);
@@ -66,7 +66,8 @@ public class PickemLeague {
                     ArrayList<Team> newCurrent = new ArrayList<>(current);
                     newCurrent.add(team);
                     ArrayList<Team> newLst = new ArrayList<>(lst);
-                    newLst.remove(team);
+                    while(newLst.get(0) != team) newLst.remove(0);
+                    newLst.remove(0);
                     generate(newCurrent, newLst, shekels);
                 }
             }

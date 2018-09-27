@@ -1,18 +1,12 @@
-import requests
 from math import ceil
 from scipy.special import erfinv
+from functions import getTBAdata
 
-def getdata(url):
-    try:
-        return requests.get(url, "accept=application%2Fjson&X-TBA-Auth-Key=gl4GXuoqG8anLUrLo356LIeeQZk15cfSoXF72YT3mYkI38cCoAmReoCSSF4XWccQ").json()
-    except:
-        print("oops " + url)
-        getdata(url)
 
 file = open("prechamps_rankings.csv", "w+")
 file.write("Team #,Avg DP,Avg Playoff DP (Tie 1),Best Playoff DP (Tie 2),Avg Alliance DP (Tie 3),Best Alliance DP (Tie 4),Avg Qual DP (Tie 5),Avg No Awards DP, Total DP, # of Events, Champs Registration\n")
 for i in range(0, 15):
-    teams = getdata("https://www.thebluealliance.com/api/v3/teams/2018/"+str(i))
+    teams = getTBAdata("teams/2018/"+str(i))
     for team in teams:
         qualDP = 0
         allianceDP = 0
@@ -22,13 +16,13 @@ for i in range(0, 15):
         bestPlayoff = 0
         num_events = 0
         champs = ""
-        eventKeys = getdata("https://www.thebluealliance.com/api/v3/team/"+team["key"]+"/events/2018/keys")
+        eventKeys = getTBAdata("team/"+team["key"]+"/events/2018/keys")
         for eventKey in eventKeys:
-            event = getdata("https://www.thebluealliance.com/api/v3/event/"+eventKey+"/simple")
+            event = getTBAdata("event/"+eventKey+"/simple")
             if event["event_type"] == 3:
                 champs = event["name"]
             elif 0 <= event["event_type"] <= 2 or event["event_type"] == 5:
-                teamEvent = getdata("https://www.thebluealliance.com/api/v3/team/" + team["key"] + "/event/"+eventKey+"/status")
+                teamEvent = getTBAdata("team/" + team["key"] + "/event/"+eventKey+"/status")
                 if teamEvent is not None:
                     if teamEvent["qual"] is not None:
                         print(teamEvent)
@@ -43,7 +37,7 @@ for i in range(0, 15):
                             if playoffDP_ > bestPlayoff:
                                 bestPlayoff = playoffDP_
                         num_events += 1
-        awards = getdata("https://www.thebluealliance.com/api/v3/team/" + team["key"] + "/awards/2018")
+        awards = getTBAdata("team/" + team["key"] + "/awards/2018")
         for award in awards:
             try:
                 awardDP += [10, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8, 0, 0, 5, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5][award["award_type"]]

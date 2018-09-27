@@ -1,17 +1,4 @@
-import requests
-
-def getdata(url):
-    try:
-        ans = requests.get("https://www.thebluealliance.com/api/v3/" + url,
-                           "accept=application%2Fjson&X-TBA-Auth-Key=gl4GXuoqG8anLUrLo356LIeeQZk15cfSoXF72YT3mYkI38cCoAmReoCSSF4XWccQ").json()
-        if ans is not None:
-            return ans
-        else:
-            print("oops null " + url)
-            getdata(url)
-    except:
-        print("oops " + url)
-        getdata(url)
+from functions import getTBAdata
 
 DPs = {}
 with open("DistrictRankings/Ranking Points/world_RP.csv") as file:
@@ -26,11 +13,11 @@ for team in allteams[1:]:
 
 data = {}
 
-events = getdata("events/2018/simple")
+events = getTBAdata("events/2018/simple")
 for event in events:
     if event["event_type"]<=5:
         print(event["key"])
-        matches = getdata("event/"+event["key"]+"/matches/simple")
+        matches = getTBAdata("event/"+event["key"]+"/matches/simple")
         for match in matches:
             if match["comp_level"]=="qm":
                 diffRP = round(sum([DPs[team]["Avg Win RP"] for team in match["alliances"]["red"]["team_keys"]]) - sum([DPs[team]["Avg Win RP"] for team in match["alliances"]["blue"]["team_keys"]]), 1)

@@ -1,18 +1,7 @@
-import requests
 from math import ceil
 from scipy.special import erfinv
+from functions import getTBAdata
 
-def getdata(url):
-    try:
-        ans = requests.get(url, "accept=application%2Fjson&X-TBA-Auth-Key=gl4GXuoqG8anLUrLo356LIeeQZk15cfSoXF72YT3mYkI38cCoAmReoCSSF4XWccQ").json()
-        if ans is not None:
-            return ans
-        else:
-            print("oops null " + url)
-            getdata(url)
-    except:
-        print("oops " + url)
-        getdata(url)
 
 class Team:
     def __init__(self, event, status, OPR):
@@ -58,13 +47,13 @@ file.write("Team #,")
 
 for year in range(2010, 2018+1):
     file.write(str(year) + " DP," + str(year) + " OPR," + str(year) + " Rank," + str(year) + " Num Events,")
-    events = getdata("https://www.thebluealliance.com/api/v3/events/" + str(year))
+    events = getTBAdata("events/" + str(year))
     for event in events:
         if 0 <= event["event_type"] <= 3 or event["event_type"] == 5:
             if len(event["division_keys"]) == 0:
                 print(event["key"])
-                statuses = getdata("https://www.thebluealliance.com/api/v3/event/" + event["key"] + "/teams/statuses")
-                oprs = getdata("https://www.thebluealliance.com/api/v3/event/" + event["key"] + "/oprs")["oprs"]
+                statuses = getTBAdata("event/" + event["key"] + "/teams/statuses")
+                oprs = getTBAdata("event/" + event["key"] + "/oprs")["oprs"]
                 for teamKey in statuses:
                     print(statuses[teamKey])
                     if teamKey in oprs:

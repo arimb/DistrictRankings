@@ -1,11 +1,4 @@
-import requests
-
-def getdata(url):
-    try:
-        return requests.get(url, "accept=application%2Fjson&X-TBA-Auth-Key=gl4GXuoqG8anLUrLo356LIeeQZk15cfSoXF72YT3mYkI38cCoAmReoCSSF4XWccQ").json()
-    except:
-        print("oops " + url)
-        getdata(url)
+from functions import getTBAdata
 
 class Team:
     def __init__(self, key, event, DP):
@@ -46,12 +39,12 @@ year = 2018
 
 file = open("2018_predcmp_world_DP.csv", "w+")
 file.write("Team,# Events,Adj Qual DP,Adj Alliance DP,Adj Playoff DP,Adj Awards DP,Best Alliance,Best Playoff,Adj DP,Adj DP w/Awards\n")
-events = getdata("https://www.thebluealliance.com/api/v3/events/"+str(year))
+events = getTBAdata("events/"+str(year))
 for event in events:
     if 0 <= event["event_type"] <= 1:# or event["event_type"] == 5:
         if len(event["division_keys"]) == 0:
             print(event["key"])
-            DPs = getdata("https://www.thebluealliance.com/api/v3/event/"+event["key"]+"/district_points")["points"]
+            DPs = getTBAdata("event/"+event["key"]+"/district_points")["points"]
             for teamKey in DPs:
                 if teamKey in teams:
                     teams[teamKey].add_event(event, DPs[teamKey])

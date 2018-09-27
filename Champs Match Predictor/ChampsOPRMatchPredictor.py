@@ -1,11 +1,4 @@
-import requests
-
-def getdata(url):
-    try:
-        return requests.get(url, "accept=application%2Fjson&X-TBA-Auth-Key=gl4GXuoqG8anLUrLo356LIeeQZk15cfSoXF72YT3mYkI38cCoAmReoCSSF4XWccQ").json()
-    except:
-        print("oops " + url)
-        getdata(url)
+from functions import getTBAdata
 
 class Team:
     def __init__(self, OPR):
@@ -22,12 +15,12 @@ year = 2018
 
 file = open("2018_OPR_champs_predictions.csv", "w+")
 file.write("Match Key,Red 1,Red 2,Red 3,Blue 1,Blue 2,Blue 3,Red DP,Blue DP,Prediction,Actual,Good?\n")
-events = getdata("https://www.thebluealliance.com/api/v3/events/"+str(year))
+events = getTBAdata("events/"+str(year))
 for event in events:
     if 0 <= event["event_type"] <= 2 or event["event_type"] == 5:
         if len(event["division_keys"]) == 0:
             print(event["key"])
-            OPRs = getdata("https://www.thebluealliance.com/api/v3/event/"+event["key"]+"/oprs")["oprs"]
+            OPRs = getTBAdata("event/"+event["key"]+"/oprs")["oprs"]
             for teamKey in OPRs:
                 if teamKey in teams:
                     teams[teamKey].add_event(OPRs[teamKey])
@@ -36,7 +29,7 @@ for event in events:
 
 for event in ["carv","gal","hop","new","roe","tur","arc","cars","cur","dal","dar","tes"]:
     print(event)
-    matches = getdata("https://www.thebluealliance.com/api/v3/event/"+str(year)+event+"/matches/simple")
+    matches = getTBAdata("event/"+str(year)+event+"/matches/simple")
     num = total = 0
     for match in matches:
         if match["comp_level"]=="qm":

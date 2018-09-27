@@ -1,19 +1,7 @@
-import requests
 import tkinter as tk
 from tkinter import filedialog
+from functions import getTBAdata
 
-def getdata(url):
-    try:
-        ans = requests.get("https://www.thebluealliance.com/api/v3/" + url,
-                           "accept=application%2Fjson&X-TBA-Auth-Key=gl4GXuoqG8anLUrLo356LIeeQZk15cfSoXF72YT3mYkI38cCoAmReoCSSF4XWccQ").json()
-        if ans is not None:
-            return ans
-        else:
-            print("oops null " + url)
-            getdata(url)
-    except:
-        print("oops " + url)
-        getdata(url)
 def gmean(numbers):
     mean = 1
     for x in numbers:
@@ -22,7 +10,7 @@ def gmean(numbers):
 
 def predict(event):
     print(event)
-    matches = getdata("event/" + event + "/matches")
+    matches = getTBAdata("event/" + event + "/matches")
     try:
         matches = sorted(matches, key=lambda x: x["predicted_time"])
     except:
@@ -94,7 +82,7 @@ def predict(event):
     teams = sorted(teams, key=lambda x: x[1]["losses"])
     teams = sorted(teams, key=lambda x: x[1]["wins"], reverse=True)
 
-    rankings = getdata("event/"+event+"/rankings")["rankings"]
+    rankings = getTBAdata("event/"+event+"/rankings")["rankings"]
     try:
         rankings = [(x["team_key"], (x["record"], x["matches_played"])) for x in rankings]
         rankings = dict(rankings)

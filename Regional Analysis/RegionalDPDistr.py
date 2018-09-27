@@ -1,23 +1,16 @@
-import requests
-
-def getdata(url):
-    try:
-        return requests.get(url, "accept=application%2Fjson&X-TBA-Auth-Key=gl4GXuoqG8anLUrLo356LIeeQZk15cfSoXF72YT3mYkI38cCoAmReoCSSF4XWccQ").json()
-    except:
-        print("oops " + url)
-        getdata(url)
+from functions import getTBAdata
 
 file = open("regional_DP_placement_aw.csv", "w+")
 file.write("Event,Team,Rank,Qual,Alliance #,Alliance Pick,Playoff Level,Awards\n")
-events = getdata("https://www.thebluealliance.com/api/v3/events/2018/simple")
+events = getTBAdata("events/2018/simple")
 for event in events:
     if event["event_type"] == 0:
         print(event)
-        DPs = getdata("https://www.thebluealliance.com/api/v3/event/"+event["key"]+"/district_points")["points"]
+        DPs = getTBAdata("event/"+event["key"]+"/district_points")["points"]
         ranking = []
         for teamKey in DPs:
             print(DPs[teamKey])
-            team = getdata("https://www.thebluealliance.com/api/v3/team/"+teamKey+"/event/"+event["key"]+"/status")
+            team = getTBAdata("team/"+teamKey+"/event/"+event["key"]+"/status")
             try:
                 alliance = {"alliance":team["alliance"]["number"], "pick":team["alliance"]["pick"]+1}
             except:

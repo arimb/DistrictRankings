@@ -1,19 +1,7 @@
 import random
 import math
-import requests
+from functions import getTBAdata
 
-def getdata(url):
-    try:
-        ans = requests.get("https://www.thebluealliance.com/api/v3/" + url,
-                           "accept=application%2Fjson&X-TBA-Auth-Key=gl4GXuoqG8anLUrLo356LIeeQZk15cfSoXF72YT3mYkI38cCoAmReoCSSF4XWccQ").json()
-        if ans is not None:
-            return ans
-        else:
-            print("oops null " + url)
-            getdata(url)
-    except:
-        print("oops " + url)
-        getdata(url)
 
 DPs = {}
 with open("DistrictRankings/Ranking Points/world_RP.csv") as file:
@@ -27,7 +15,7 @@ for team in allteams[1:]:
         DPs[key][titles[i]] = float(element)
 
 event = input("event: ")
-teams = getdata("event/"+event+"/teams/keys")
+teams = getTBAdata("event/"+event+"/teams/keys")
 num_matches = int(input("Matches per Team: "))
 with open("DistrictRankings/Event Predictor/schedules/"+str(len(teams))+"_"+str(num_matches)+".csv") as file:
     matches = file.readlines()

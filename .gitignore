@@ -1,3 +1,4 @@
 *.db
 .idea/
-*/__pycache__/
+Pickem League/.idea
+*\__pycache__\

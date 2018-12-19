@@ -1,6 +1,6 @@
 import requests
 from scipy.special import erfinv
-from math import ceil
+from math import ceil, exp
 
 def getTBAdata(url, retry=True):
     try:
@@ -48,20 +48,24 @@ for year in years:
         eventdp = eventDP(event["key"])
         for key, dp in eventdp.items():
             if key not in yeardp: yeardp[key] = [0, 0]
-            yeardp[key][0] += dp
-            yeardp[key][1] += 1
+            yeardp[key][0] += dp * [1,1,1.1,1.2,1,1.1][event["event_type"]]
+            yeardp[key][1] += 1 if event["event_type"] != 4 else 0
     for key, t in yeardp.items():
         if key not in data: data[key] = {}
         data[key][year] = t
 
 with open("DistrictRankings/YearlyPredictor/data.csv", "w+") as file:
-    file.write(",")
+    file.write("Team,")
     for y in years:
         file.write(str(y) + ",")
-    file.write("\n")
+    file.write("Avg\n")
     for key, t in data.items():
         file.write(key + ",")
+        avg = 0
         for year in years:
-            if year in t: file.write(str(t[year][0] / t[year][1]**0.7) + ",")
+            if year in t:
+                a = t[year][0] / t[year][1]**0.7
+                file.write(str(a) + ",")
+                avg += a*exp(-1.053*(2018-year+1))
             else: file.write(",")
-        file.write("\n")
+        file.write(str(avg) + "\n")

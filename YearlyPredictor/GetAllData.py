@@ -2,11 +2,43 @@ from functions import getTBAdata
 from scipy.special import erfinv
 from math import ceil, exp
 
+awarddp = {
+    0: 60,
+    3: 10,
+    6: 5,
+    7: 5,
+    8: 5,
+    9: 45,
+    10: 25,
+    11: 5,
+    12: 5,
+    13: 5,
+    15: 5,
+    16: 20,
+    17: 20,
+    18: 5,
+    19: 5,
+    20: 20,
+    21: 20,
+    22: 5,
+    23: 20,
+    26: 20,
+    27: 5,
+    28: 5,
+    29: 20,
+    30: 5,
+    31: 5,
+    64: 5,
+    69: 45,
+    71: 20
+}
+
 def eventDP(event):
     teams = {}
     statuses = getTBAdata("event/" + event + "/teams/statuses")
     num = len(getTBAdata("event/" + event + "/teams/keys"))
     matches = getTBAdata("event/" + event + "/matches/simple")
+    awards = getTBAdata("event/" + event + "/awards")
     for key, t in statuses.items():
         if t is None: continue
         if t["qual"] is None: teams[key] = 0
@@ -22,6 +54,14 @@ def eventDP(event):
                         if key in m["alliances"]["blue"]["team_keys"] and m["winning_alliance"] == "blue": cnt += 5
                         if key in m["alliances"]["red"]["team_keys"] and m["winning_alliance"] == "red": cnt += 5
             teams[key] += cnt
+    for a in awards:
+        if a["award_type"] not in awarddp: continue
+        for t in a["recipient_list"]:
+            if t["team_key"] is None: continue
+            if t["team_key"] not in teams:
+                print("^^^^ " + t["team_key"])
+                continue
+            teams[t["team_key"]] += awarddp[a["award_type"]]
     return teams
 
 data = {}
@@ -41,7 +81,7 @@ for year in years:
         if key not in data: data[key] = {}
         data[key][year] = t
 
-with open("DistrictRankings/YearlyPredictor/data.csv", "w+") as file:
+with open("DistrictRankings/YearlyPredictor/data_award.csv", "w+") as file:
     file.write("Team,")
     for y in years:
         file.write(str(y) + ",")
@@ -53,6 +93,6 @@ with open("DistrictRankings/YearlyPredictor/data.csv", "w+") as file:
             if year in t:
                 a = t[year][0] / t[year][1]**0.7
                 file.write(str(a) + ",")
-                avg += a*exp(-1.053*(2018-year+1))
+                avg += a*1.7*exp(-0.9933*(2018-year+1))
             else: file.write(",")
         file.write(str(avg) + "\n")

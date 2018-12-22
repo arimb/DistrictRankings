@@ -1,18 +1,13 @@
 import random
 import math
 from functions import getTBAdata
-
+import csv
 
 DPs = {}
-with open("DistrictRankings/Ranking Points/world_RP.csv") as file:
-    allteams = file.readlines()
-titles = allteams[0].strip().split(",")
-for team in allteams[1:]:
-    team = team.strip().split(",")
-    key = ("frc" if team[0][:2]=="frc" else "") + team[0]
-    DPs[key] = {}
-    for i, element in enumerate(team[1:], start=1):
-        DPs[key][titles[i]] = float(element)
+with open("DistrictRankings/SingleYearDP/2018_world_DP.csv") as file:
+    reader = csv.DictReader(file)
+    for row in reader:
+        DPs[row["Team"]] = float(row["Adj DP"])
 
 event = input("event: ")
 teams = getTBAdata("event/"+event+"/teams/keys")
@@ -30,18 +25,11 @@ for i in range(runs):
     ev = {team:[0,0] for team in teams}
     for match in matches:
         playing = [teams[x-1] for x in match]
-        redwins = random.random() <= 1/(1+math.exp(-3.5*(sum([DPs[team]["Avg Win RP"] for team in playing[:3]])-sum([DPs[team]["Avg Win RP"] for team in playing[3:]]))))
+        redwins = random.random() <= 1/(1+math.exp(-(sum([DPs[team] for team in playing[:3]])-sum([DPs[team] for team in playing[3:]]))/38))
         for team in playing:
             ev[team][1] += 1
         for team in playing[:3] if redwins else playing[3:]:
-            ev[team][0] += 2
-        for alliance in [playing[:3], playing[3:]]:
-            if 3 * random.random() <= sum([DPs[team]["Avg Auto RP"] for team in alliance]):
-                for team in alliance:
-                    ev[team][0] += 1
-            if 3 * random.random() <= sum([DPs[team]["Avg Climb RP"] for team in alliance]):
-                for team in alliance:
-                    ev[team][0] += 1
+            ev[team][0] += 1
     ev = sorted([(ev[tmp][0]/ev[tmp][1], tmp) for tmp in ev], reverse=True)
     for rank, team in enumerate(ev, start=1):
         results[team[1]][rank-1] += 1

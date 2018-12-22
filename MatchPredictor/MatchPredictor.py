@@ -1,46 +1,38 @@
 import tkinter as tk
 from tkinter import filedialog
 from functions import getTBAdata
-
-def gmean(numbers):
-    mean = 1
-    for x in numbers:
-        mean *= x
-    return pow(mean, 1/len(numbers))
+from scipy.stats.mstats import gmean
 
 def predict(event):
     print(event)
-    matches = getTBAdata("event/" + event + "/matches")
-    try:
-        matches = sorted(matches, key=lambda x: x["predicted_time"])
-    except:
-        try:
-            matches = sorted(matches, key=lambda x: x["actual_time"])
-        except:
-            pass
     results = []
     teams = {}
+    matches = getTBAdata("event/" + event + "/matches")
+    if None not in [m["predicted_time"] for m in matches]:
+        matches = sorted(matches, key=lambda x: x["predicted_time"])
+    elif None not in [m["actual_time"] for m in matches]:
+        matches = sorted(matches, key=lambda x: x["actual_time"])
     for match in matches:
         redteams = match["alliances"]["red"]["team_keys"]
         blueteams = match["alliances"]["blue"]["team_keys"]
-        red = gmean([float(DPs[team]["Adj DP"]) if team in DPs else 25 for team in redteams]) if ver == 1 \
-            else sum([float(DPs[team]["Adj Qual DP"]) if team in DPs else 25 for team in redteams]) if ver == 2 \
-            else sum([float(DPs[team]["Adj DP"]) if team in DPs else 25 for team in redteams])
-        blue = gmean([float(DPs[team]["Adj DP"]) if team in DPs else 25 for team in blueteams]) if ver == 1 \
-            else sum([float(DPs[team]["Adj Qual DP"]) if team in DPs else 25 for team in blueteams]) if ver == 2 \
-            else sum([float(DPs[team]["Adj DP"]) if team in DPs else 25 for team in blueteams])
-        predict = "RED" if red > blue else "BLUE"
-        prob = 1 / (1 + pow(10, ((red - blue) / (23 if ver == 1 else 20 if ver == 2 else 80))))
+        if ver == 1:
+            red = gmean([float(DPs[t]["Adj DP"]) if t in DPs else 25 for t in redteams])
+            blue = gmean([float(DPs[t]["Adj DP"]) if t in DPs else 25 for t in blueteams])
+        elif ver == 2:
+            red = sum([float(DPs[t]["Adj Qual DP"]) if t in DPs else 25 for t in redteams])
+            blue = sum([float(DPs[t]["Adj Qual DP"]) if t in DPs else 25 for t in blueteams])
+        else:
+            red = sum([float(DPs[t]["Adj DP"]) if t in DPs else 25 for t in redteams])
+            blue = sum([float(DPs[t]["Adj DP"]) if t in DPs else 25 for t in blueteams])
+        prob = 1/(1+pow(10,((red-blue)/[80,23,20][ver])))
         if -1 in [match["alliances"]["red"]["score"], match["alliances"]["blue"]["score"]]:
-            winner = "N/A"
-            correct = "N/A"
-            brier = "N/A"
+            winner = correct = brier = None
         else:
             winner = match["winning_alliance"].upper()
             correct = (predict == winner)
             brier = pow(prob - int(winner == "BLUE"), 2)
-        results.append((match["key"], redteams, blueteams, red, blue, predict, prob, winner, correct, brier))
-        for team in redteams:
+        results.append((match["key"], redteams, blueteams, red, blue,"RED" if red>blue else "BLUE",prob, winner, correct, brier))
+        for team in redteams + blueteams:
             if team not in teams:
                 teams[team] = {"wins": 0, "losses": 0, "played": 0}
             if team not in match["alliances"]["red"]["surrogate_team_keys"]:

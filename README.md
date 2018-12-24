@@ -16,7 +16,7 @@ The simulator works thusly. Using the pre-constructed match schedules from [Chee
 
 MatchPredictor predicts the final qualification ranking of an event once the event's match schedule has been released. It works similarly to EventPredictor, but without needing the CheesyArena schedules. In its current form MatchPredictor also needs a majority of teams' Adjusted District Points, so it only works for late/post-season competitions.
 
-##OPR_Correlation
+## OPR_Correlation
 
 ORP_Correlation does exactly what it sounds like: it looks at the correlation between the district points model and the OPR and Qualification Rank models. It found DP/OPR correlations of 52%, 68%, 62%, 61%, 65%, 75%, 68%, 60%, and 66% for each year since 2010, respectively; the average of which is 64%.
 
@@ -26,3 +26,12 @@ This script was used to evaluate the best choices for the [IRI Pickem League com
 
 ## RegionalDistribution
 
+This script evaluated the results of all Regional events, comparing the qualities of teams sent to Championships under the current winners, awards, and wildcard system against a pure district points ranking system. It also explored some unrelated statistics regarding Regionals and Regional-system teams. 
+
+## SingleYearDP
+
+SingleYearDP calculates the Adjusted District Points for every team in the world over the course of the entire season (excluding week 0 and post-season competitions). This is the source for the rankings that are used in most of the other sections, and for the season-end rankings. Also calculated here are the pre-Championships and pre-DCMP rankings, used for retroactively predicting outcomes for CMP and DCMP without having foreknowledge of the outcomes.
+
+## YearlyPredictor
+
+YearlyPredictor takes the calculated Asjusted District Points for all teams in each season since 2011 and combines them into one ranking. This is very useful, as it allows for predictions to be made in early-season competitions where teams haven't yet competed in events this season. It uses an eponentially decreasing weighting system, where the previous year is 63% of the final score, 23% for two years previous, 9% for 3 years, and 5% for the rest of the years, continuing the exponential trend.

@@ -34,4 +34,4 @@ SingleYearDP calculates the Adjusted District Points for every team in the world
 
 ## YearlyPredictor
 
-YearlyPredictor takes the calculated Asjusted District Points for all teams in each season since 2011 and combines them into one ranking. This is very useful, as it allows for predictions to be made in early-season competitions where teams haven't yet competed in events this season. It uses an eponentially decreasing weighting system, where the previous year is 63% of the final score, 23% for two years previous, 9% for 3 years, and 5% for the rest of the years, continuing the exponential trend.
+YearlyPredictor takes the calculated Adjusted District Points for all teams in each season since 2011 and combines them into one ranking. This is very useful, as it allows for predictions to be made in early-season competitions where teams haven't yet competed in events this season. It uses an exponentially decreasing weighting system, where the previous year is 63% of the final score, 23% for two years previous, 9% for 3 years, and 5% for the rest of the years, continuing the exponential trend.

@@ -1,6 +1,6 @@
 *.db
 Pickem League/.idea
 *\__pycache__\
-~$*
+~*
 *.xml
 *.iml

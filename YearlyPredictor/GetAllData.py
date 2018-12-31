@@ -93,6 +93,6 @@ with open("DistrictRankings/YearlyPredictor/data_award.csv", "w+") as file:
             if year in t:
                 a = t[year][0] / t[year][1]**0.7
                 file.write(str(a) + ",")
-                avg += a*1.7*exp(-0.9933*(max(years)-year+1))
+                avg += a*1.667*exp(-0.9808*(max(years)-year+1))
             else: file.write(",")
-        file.write(str(avg) + "\n")
+        file.write((str(avg) if avg > 0.05 else "15") + "\n")

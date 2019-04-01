@@ -81,7 +81,7 @@ for year in years:
         if key not in data: data[key] = {}
         data[key][year] = t
 
-with open("DistrictRankings/YearlyPredictor/data_award.csv", "w+") as file:
+with open("data_award.csv", "w+") as file:
     file.write("Team,")
     for y in years:
         file.write(str(y) + ",")

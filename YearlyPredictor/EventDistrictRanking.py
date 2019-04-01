@@ -2,7 +2,7 @@ from functions import getTBAdata
 import csv
 
 allteams = {}
-with open("DistrictRankings/YearlyPredictor/data_award.csv") as file:
+with open("data_award.csv") as file:
     reader = csv.DictReader(file)
     for row in reader:
         allteams[row["Team"]] = float(row["Avg"])
@@ -36,7 +36,7 @@ for district in districts:
     print(district)
     picks[district] = ranked
 
-with open("DistrictRankings/YearlyPredictor/picks_award.csv", "w+") as file:
+with open("picks_award.csv", "w+") as file:
     for name, teams in picks.items():
         file.write(name + ",")
         for t in teams:

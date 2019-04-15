@@ -1,13 +1,14 @@
 import tkinter as tk
 from tkinter import filedialog
-from functions import getTBAdata
+from functions import get_tba_data, get_data
 from scipy.stats.mstats import gmean
 
 def predict(event):
     print(event)
     results = []
     teams = {}
-    matches = getTBAdata("event/" + event + "/matches")
+    matches = get_tba_data("event/" + event + "/matches")
+    # matches = get_data("https://arimb.ddns.net/cmp_prelim_sched/" + event + ".json")
     if None not in [m["predicted_time"] for m in matches]:
         matches = sorted(matches, key=lambda x: x["predicted_time"])
     elif None not in [m["actual_time"] for m in matches]:
@@ -74,7 +75,7 @@ def predict(event):
     teams = sorted(teams, key=lambda x: x[1]["losses"])
     teams = sorted(teams, key=lambda x: x[1]["wins"], reverse=True)
 
-    rankings = getTBAdata("event/"+event+"/rankings")["rankings"]
+    rankings = get_tba_data("event/"+event+"/rankings")["rankings"]
     try:
         rankings = [(x["team_key"], (x["record"], x["matches_played"])) for x in rankings]
         rankings = dict(rankings)
@@ -89,7 +90,7 @@ def predict(event):
                        result[1][0][3:] + "," + result[1][1][3:] + "," + result[1][2][3:] + "," +
                        result[2][0][3:] + "," + result[2][1][3:] + "," + result[2][2][3:] + "," +
                        str(result[3]) + "," + str(result[4]) + "," +
-                       result[5] + "," + str(result[6]) + "," +
+                       result[5] + "," + str(result[6]) + "," + #   "\n")
                        result[7] + "," + str(result[8]) + "," + str(result[9]) + "\n")
         file.write("Average,,,,,,,,,,,% Correct->," + str(avg) + "," + str(brier) + ",<-Brier Score\n")
         file.write("\nPredicted Rankings\nRank,Team,Proj. Wins,Proj. Losses,Proj Win %" + (",Real Wins,Real Losses,Real Ties,Real Win %" if len(rankings)>0 else "") + "\n")
@@ -103,17 +104,21 @@ def predict(event):
                 file.write("\n")
 
 DPs = {}
-tk.Tk().withdraw()
-with open(filedialog.askopenfilename()) as file:
+# tk.Tk().withdraw()
+# with open(filedialog.askopenfilename()) as file:
+with open("../SingleYearDP/2018_precmp_DP_.csv") as file:
     allteams = file.readlines()
 titles = allteams[0].strip().split(",")
 for team in allteams[1:]:
     team = team.strip().split(",")
-    DPs["frc" + team[0]] = {}
+    DPs[team[0]] = {}
     for i, element in enumerate(team[1:], start=1):
-        DPs["frc" + team[0]][titles[i]] = element
+        DPs[team[0]][titles[i]] = element
+print(DPs)
 
-events = input("Event Key: ")
+# events = input("Event Key: ")
+# events = "2019carv 2019gal 2019hop 2019new 2019roe 2019tur"
+events = "2018carv 2018gal 2018hop 2018new 2018roe 2018tur 2018arc 2018cars 2018cur 2018dal 2018dar 2018tes"
 for event in events.split(" "):
     for ver in range(0,3):
         predict(event)

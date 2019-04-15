@@ -27,7 +27,7 @@ class Team:
         return value * (self.num_events ** -0.7)
 
 teams = {}
-year = 2018
+year = 2019
 
 events = get_tba_data("events/"+str(year))
 for event in events:
@@ -50,7 +50,7 @@ teamlist = sorted(teams, key=lambda key:(teams[key].adjawards(),
                                          teams[key].bestAlliance,
                                          teams[key].valadj(teams[key].qual)), reverse=True)
 
-with open("2018_precmp_DP_.csv", "w+") as file:
+with open("2019_precmp_DP_.csv", "w+") as file:
     file.write("Team,# Events,Adj Qual DP,Adj Alliance DP,Adj Playoff DP,Adj Awards DP,Best Alliance,Best Playoff,Adj DP,Adj DP w/Awards\n")
     for team in teamlist:
         file.write(teams[team].key + "," +

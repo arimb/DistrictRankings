@@ -31,8 +31,8 @@ year = 2019
 
 events = get_tba_data("events/"+str(year))
 for event in events:
-    # if event["event_type"] == 4 or event["event_type"] > 5 or len(event["division_keys"]) > 0: continue     #All Events
-    if event["event_type"] not in [0,1,2,5] or len(event["division_keys"]) > 0: continue     #Pre-Champs
+    if event["event_type"] == 4 or event["event_type"] > 5 or len(event["division_keys"]) > 0: continue     #All Events
+    # if event["event_type"] not in [0,1,2,5] or len(event["division_keys"]) > 0: continue     #Pre-Champs
     #if event["event_type"] > 1 or len(event["division_keys"]) > 0: continue     #Pre-DCMP
     print(event["key"])
     DPs = get_tba_data("event/"+event["key"]+"/district_points")["points"]
@@ -50,7 +50,7 @@ teamlist = sorted(teams, key=lambda key:(teams[key].adjawards(),
                                          teams[key].bestAlliance,
                                          teams[key].valadj(teams[key].qual)), reverse=True)
 
-with open("2019_precmp_DP_.csv", "w+") as file:
+with open("2019_world_DP.csv", "w+") as file:
     file.write("Team,# Events,Adj Qual DP,Adj Alliance DP,Adj Playoff DP,Adj Awards DP,Best Alliance,Best Playoff,Adj DP,Adj DP w/Awards\n")
     for team in teamlist:
         file.write(teams[team].key + "," +

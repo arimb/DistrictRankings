@@ -19,16 +19,17 @@ with open("2019_world_DP.csv") as dpfile, open("input.csv") as pricefile:
     allteams = {}
     dpreader = csv.DictReader(dpfile)
     for row in dpreader:
-        allteams[int(row["Team"][3:])] = [float(row["Adj DP"]), float(row["Adj Alliance DP"])+float(row["Adj Playoff DP"])]
+        allteams[int(row["Team"][3:])] = float(row["Adj Alliance DP"])+float(row["Adj Playoff DP"])
 
     teams = {}
     pricereader = csv.DictReader(pricefile)
     for row in pricereader:
         teams[int(row["Team"])] = (allteams[int(row["Team"])], int(row["Price"]))
     del allteams
-    for t,x in sorted(teams.items(), key=lambda y:y[1][0][1], reverse=True)[32:]:
-        teams[t][0][0] -= teams[t][0][1]*0.75
-    teams = {key:(val[0][0], val[1]) for key,val in teams.items()}
+    # for t,x in sorted(teams.items(), key=lambda y:y[1][0][1], reverse=True)[32:]:
+    #     teams[t][0][0] -= teams[t][0][1]*0.75
+    # teams = {key:(val[0][0], val[1]) for key,val in teams.items()}
+
     # min_play = min([x[0][1] for key,x in teams.items()])
     # teams = {key:(val[0][0]-min_play*0.75, val[1]) for key, val in teams.items()}
 
